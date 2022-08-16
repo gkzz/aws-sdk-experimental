@@ -33,7 +33,7 @@ const dummyOutput = {
 
 // https://jestjs.io/docs/tutorial-async#asyncawait
 describe("run main", () => {
-  it("run main", async () => {
+  it("Successful", async () => {
     ec2ClientMock
         .on(RunInstancesCommand, runInstancesCommandInput)
         .resolves({
@@ -51,8 +51,44 @@ describe("run main", () => {
         .on(TerminateInstancesCommand, { InstanceIds: ["i-0000dummy"] })
         .resolves(dummyOutput)
 
-    const ret = await main();
-    expect(ret).toBe(dummyOutput["TerminatingInstances"][0]);
+    await expect(main()).resolves.toBe(dummyOutput["TerminatingInstances"][0]);
+
+    expect(ec2ClientMock).toHaveReceivedCommandTimes(RunInstancesCommand, 1);
+    expect(ec2ClientMock).toHaveReceivedCommandTimes(DescribeInstancesCommand, 0);
+    expect(ec2ClientMock).toHaveReceivedCommandTimes(TerminateInstancesCommand, 1);
+  });
+
+  it("RunInstancesCommand failed", async () => {
+    ec2ClientMock
+      .on(RunInstancesCommand, runInstancesCommandInput)
+      .rejects();
+
+    await expect(main()).rejects.toThrow("Failed to run the EC2 Instance");
+
+    expect(ec2ClientMock).toHaveReceivedCommandTimes(RunInstancesCommand, 1);
+    expect(ec2ClientMock).toHaveReceivedCommandTimes(DescribeInstancesCommand, 0);
+    expect(ec2ClientMock).toHaveReceivedCommandTimes(TerminateInstancesCommand, 0);
+  });
+
+  it("TerminateInstancesCommand failed", async () => {
+    ec2ClientMock
+      .on(RunInstancesCommand, runInstancesCommandInput)
+      .resolves({
+        $metadata: {
+          httpStatusCode: 200,
+        },
+        Instances: [{"InstanceId": "i-0000dummy"}]})
+    ec2ClientMock
+      .on(DescribeInstancesCommand, { InstanceIds: ["i-0000dummy"] })
+      .resolves({
+        $metadata: {
+          httpStatusCode: 200,
+        }})
+    ec2ClientMock
+      .on(TerminateInstancesCommand, { InstanceIds: ["i-0000dummy"] })
+      .rejects();
+
+    await expect(main()).rejects.toThrow("Failed to terminate the EC2 Instance");
 
     expect(ec2ClientMock).toHaveReceivedCommandTimes(RunInstancesCommand, 1);
     expect(ec2ClientMock).toHaveReceivedCommandTimes(DescribeInstancesCommand, 0);

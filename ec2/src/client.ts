@@ -31,7 +31,7 @@ export class Client {
         const output: RunInstancesCommandOutput | void = await this.ec2Client
             .send(new RunInstancesCommand(cmd))
             .catch((error) => {
-                console.error("Create EC2 Instance error!! \n\n", error);
+                throw new Error(`Failed to run the EC2 Instance \n\n ${error}`);
             });
         if (!output) {
             throw new Error("Failed to run the EC2 Instance");
@@ -48,7 +48,7 @@ export class Client {
                 return instance;
             })
             .catch((error) => {
-                console.error("Failed to describe the EC2 Instance error!! \n\n", error);
+                throw new Error(`Failed to describe the EC2 Instance \n\n ${error}`);
             });
         if (!output) {
             throw new Error("Failed to describe the EC2 Instance");
@@ -64,7 +64,7 @@ export class Client {
                 return instance;
             })
             .catch((error) => {
-                console.error("Failed to terminate EC2 Instance! \n\n", error);
+                throw new Error(`Failed to terminate the EC2 Instance \n\n ${error}`);
             });
         if (!output) {
             throw new Error("Failed to terminate the EC2 Instance");
