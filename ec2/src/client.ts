@@ -11,10 +11,21 @@ import {
 } from "@aws-sdk/client-ec2";
 import { fromIni } from "@aws-sdk/credential-providers";
 
+// Custom Timeout
+// https://github.com/aws/aws-sdk-js-v3/blob/main/UPGRADING.md#client-constructors
+import  { Agent } from "https";
+import { NodeHttpHandler } from "@aws-sdk/node-http-handler";
+
 export class Client {
     constructor(private readonly ec2Client: EC2Client = new EC2Client({
         credentials: fromIni({profile: "sdk-user"}),
-        region: process.env["REGION"]
+        region: process.env["REGION"],
+        requestHandler: new NodeHttpHandler({
+            httpsAgent: new Agent({}),
+            //5000 ms
+            connectionTimeout: 5000,
+            socketTimeout: 5000
+            })
     })) {}
 
     async runInstance(cmd: RunInstancesCommandInput): Promise<RunInstancesCommandOutput | void> {

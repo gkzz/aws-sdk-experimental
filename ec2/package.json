@@ -25,6 +25,8 @@
   },
   "dependencies": {
     "@aws-sdk/client-ec2": "^3.140.0",
-    "@aws-sdk/credential-providers": "^3.137.0"
+    "@aws-sdk/credential-providers": "^3.137.0",
+    "@aws-sdk/node-http-handler": "^3.127.0",
+    "https": "^1.0.0"
   }
 }
