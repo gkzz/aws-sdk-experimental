@@ -6,8 +6,7 @@ import {
     DescribeInstancesCommand,
     DescribeInstancesCommandOutput,
     TerminateInstancesCommand,
-    TerminateInstancesCommandOutput,
-    InstanceStateChange
+    TerminateInstancesCommandOutput
 } from "@aws-sdk/client-ec2";
 import { fromIni } from "@aws-sdk/credential-providers";
 
@@ -71,17 +70,5 @@ export class Client {
             throw new Error("Failed to terminate the EC2 Instance");
         }
         return output;
-    }
-
-    parseTerminateInstanceOutput(output: TerminateInstancesCommandOutput | void): InstanceStateChange {
-        const result: InstanceStateChange | undefined = output?.TerminatingInstances?.[0];
-        if (
-          result === undefined
-          || result.InstanceId === undefined
-          || result.CurrentState === undefined
-          || result.PreviousState === undefined) {
-            throw new Error("Failed to parse terminated the EC2 Instance");
-        }
-        return result;
     }
 }
