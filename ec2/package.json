@@ -3,9 +3,13 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "lint": "eslint 'src/*.ts'",
-    "lint:fix": "eslint --fix 'src/*.ts'",
-    "test": "jest"
+    "lint": "run-p --print-label lint:*",
+    "format": "run-p --print-label format:*",
+    "lint:eslint": "eslint 'src/*.ts' 'src/__tests__/*.ts'",
+    "lint:prettier": "prettier --check 'src/*.ts' 'src/__tests__/*.ts'",
+    "format:eslint": "eslint --fix 'src/*.ts'",
+    "format:prettier": "prettier --write 'src/*.ts' 'src/__tests__/*.ts'",
+    "test": "jest --detectOpenHandles"
   },
   "keywords": [],
   "author": "",
@@ -15,15 +19,19 @@
     "@types/node": "^18.6.2",
     "@typescript-eslint/eslint-plugin": "^5.31.0",
     "@typescript-eslint/parser": "^5.31.0",
+    "aws-sdk-client-mock": "^1.0.0",
     "eslint": "^8.20.0",
     "eslint-config-prettier": "^8.5.0",
     "jest": "^28.1.3",
+    "npm-run-all": "^4.1.5",
     "prettier": "^2.7.1",
     "ts-jest": "^28.0.7",
     "ts-node": "^10.9.1"
   },
   "dependencies": {
     "@aws-sdk/client-ec2": "^3.140.0",
-    "@aws-sdk/credential-providers": "^3.137.0"
+    "@aws-sdk/credential-providers": "^3.137.0",
+    "@aws-sdk/node-http-handler": "^3.127.0",
+    "https": "^1.0.0"
   }
 }
